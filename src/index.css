@@ -1,96 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* TechResQ Design System - Dark Theme with Gradients and Animations */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
+    /* Dark Theme Base */
+    --background: 220 26% 8%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    
+    /* Brand Colors */
+    --primary: 217 91% 60%;
+    --primary-glow: 217 91% 70%;
+    --secondary: 142 76% 36%;
+    --accent: 289 85% 65%;
+    --warning: 45 93% 47%;
+    --danger: 0 84% 60%;
+    
+    /* Surface Colors */
+    --card: 220 26% 12%;
+    --card-hover: 220 26% 16%;
+    --surface: 220 26% 14%;
+    --surface-dark: 220 26% 10%;
+    
+    /* Text Colors */
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 220 15% 30%;
+    --muted-foreground: 220 9% 46%;
     --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Borders and Inputs */
+    --border: 220 26% 18%;
+    --input: 220 26% 18%;
+    --ring: 217 91% 60%;
+    
+    /* Radius */
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(289 85% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(142 76% 36%), hsl(217 91% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(220 26% 8%), hsl(220 26% 12%), hsl(217 91% 15%));
+    --gradient-card: linear-gradient(135deg, hsl(220 26% 12%), hsl(220 26% 14%));
+    --gradient-text: linear-gradient(135deg, hsl(217 91% 70%), hsl(289 85% 75%));
+    
+    /* Glows and Effects */
+    --glow-primary: 0 0 40px hsl(217 91% 60% / 0.3);
+    --glow-secondary: 0 0 40px hsl(142 76% 36% / 0.3);
+    --glow-accent: 0 0 40px hsl(289 85% 65% / 0.3);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 }
 
@@ -100,6 +66,152 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-['Inter',sans-serif] antialiased;
+    background: var(--gradient-hero);
+    min-height: 100vh;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Gradient Text */
+  .gradient-text {
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Hero Button */
+  .hero-btn {
+    @apply px-8 py-4 rounded-xl font-semibold transition-all duration-300 relative overflow-hidden;
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-primary);
+    transform: translateY(0);
+  }
+  
+  .hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-primary), 0 10px 25px hsl(217 91% 60% / 0.4);
+  }
+  
+  .hero-btn-secondary {
+    @apply px-8 py-4 rounded-xl font-semibold border-2 transition-all duration-300;
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+    background: transparent;
+  }
+  
+  .hero-btn-secondary:hover {
+    background: hsl(var(--primary) / 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Card Styles */
+  .tech-card {
+    background: var(--gradient-card);
+    @apply rounded-2xl p-6 border border-border transition-all duration-300 hover:scale-105;
+    box-shadow: 0 4px 20px hsl(220 26% 8% / 0.3);
+  }
+  
+  .tech-card:hover {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: 0 8px 40px hsl(220 26% 8% / 0.4), var(--glow-primary);
+  }
+  
+  /* Animated Background */
+  .animated-bg {
+    background: linear-gradient(270deg, 
+      hsl(217 91% 60% / 0.1), 
+      hsl(289 85% 65% / 0.1), 
+      hsl(142 76% 36% / 0.1),
+      hsl(217 91% 60% / 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300;
+    background: var(--gradient-secondary);
+    color: white;
+    box-shadow: 0 2px 10px hsl(142 76% 36% / 0.3);
+  }
+  
+  .badge:hover {
+    transform: scale(1.05);
+    box-shadow: var(--glow-secondary);
+  }
+  
+  /* Interactive Elements */
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite alternate;
+  }
+  
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  /* Risk Score Cards */
+  .risk-high {
+    @apply border-red-500 bg-red-500/10;
+    box-shadow: 0 0 20px hsl(0 84% 60% / 0.3);
+  }
+  
+  .risk-medium {
+    @apply border-yellow-500 bg-yellow-500/10;
+    box-shadow: 0 0 20px hsl(45 93% 47% / 0.3);
+  }
+  
+  .risk-low {
+    @apply border-green-500 bg-green-500/10;
+    box-shadow: 0 0 20px hsl(142 76% 36% / 0.3);
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 20px hsl(217 91% 60% / 0.3); }
+    100% { box-shadow: 0 0 40px hsl(217 91% 60% / 0.6); }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  /* Utility Classes */
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
   }
 }

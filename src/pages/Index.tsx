@@ -1,14 +1,725 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React, { useState, useEffect } from 'react';
+import { Shield, AlertTriangle, Brain, Activity, Users, Award, MessageCircle, Target, ChevronDown, ChevronRight, Star, Heart, Zap, Eye, Smartphone, Globe, CheckCircle, Clock, TrendingUp, User, Mail, Phone, MapPin } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
-const Index = () => {
+const TechResQWebsite = () => {
+  const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
+  const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [chatMessages, setChatMessages] = useState<Array<{sender: 'user' | 'bot', message: string}>>([
+    { sender: 'bot', message: 'Hello! I\'m ResQBot. How can I help you with disaster preparedness today?' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [riskInputs, setRiskInputs] = useState({ buildings: '', students: '' });
+  const [riskScore, setRiskScore] = useState<'high' | 'medium' | 'low' | null>(null);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Animated counters
+  const [counters, setCounters] = useState({ schools: 0, students: 0, incidents: 0 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCounters(prev => ({
+        schools: prev.schools < 2500 ? prev.schools + 50 : 2500,
+        students: prev.students < 150000 ? prev.students + 3000 : 150000,
+        incidents: prev.incidents < 95 ? prev.incidents + 2 : 95
+      }));
+    }, 100);
+
+    setTimeout(() => clearInterval(timer), 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const quizQuestions = [
+    {
+      question: "What should you do first during an earthquake?",
+      options: ["Run outside immediately", "Drop, Cover, and Hold On", "Stand in a doorway", "Call for help"],
+      correct: 1
+    },
+    {
+      question: "How many days of emergency supplies should you keep at home?",
+      options: ["1 day", "3 days", "7 days", "14 days"],
+      correct: 2
+    },
+    {
+      question: "What is the best way to stay informed during a disaster?",
+      options: ["Social media only", "Battery-powered radio", "Neighbor updates", "None needed"],
+      correct: 1
+    },
+    {
+      question: "Where should your family emergency meeting point be?",
+      options: ["At home only", "Near your workplace", "Two places: one near home, one outside neighborhood", "School parking lot"],
+      correct: 2
+    }
+  ];
+
+  const handleQuizAnswer = (questionIndex: number, answerIndex: number) => {
+    const newAnswers = [...quizAnswers];
+    newAnswers[questionIndex] = answerIndex;
+    setQuizAnswers(newAnswers);
+
+    if (newAnswers.length === quizQuestions.length && newAnswers.every(answer => answer !== undefined)) {
+      const score = newAnswers.reduce((acc, answer, index) => 
+        answer === quizQuestions[index].correct ? acc + 1 : acc, 0
+      );
+      setQuizScore(score);
+      if (score === quizQuestions.length) {
+        triggerConfetti();
+      }
+    }
+  };
+
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    setChatMessages(prev => [...prev, { sender: 'user', message: chatInput }]);
+    
+    // Simple bot responses
+    setTimeout(() => {
+      const responses = [
+        "That's a great question! For immediate emergency guidance, I recommend following your local emergency protocols.",
+        "Based on AI analysis, here are some personalized safety recommendations for your situation...",
+        "I can help you create a family emergency plan. Would you like me to guide you through the steps?",
+        "Emergency supplies are crucial. Let me provide you with a customized checklist based on your location and family size.",
+      ];
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      setChatMessages(prev => [...prev, { sender: 'bot', message: randomResponse }]);
+    }, 1000);
+
+    setChatInput('');
+  };
+
+  const generateRiskScore = () => {
+    const buildings = parseInt(riskInputs.buildings) || 0;
+    const students = parseInt(riskInputs.students) || 0;
+    
+    const riskValue = (buildings * 0.3) + (students * 0.0001);
+    
+    if (riskValue > 50) setRiskScore('high');
+    else if (riskValue > 20) setRiskScore('medium');
+    else setRiskScore('low');
+  };
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormSubmitted(true);
+    setTimeout(() => setFormSubmitted(false), 3000);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-hero text-foreground">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Shield className="w-8 h-8 text-primary" />
+              <span className="text-2xl font-bold gradient-text">TechResQ</span>
+            </div>
+            <div className="hidden md:flex space-x-8">
+              {['Solution', 'Demo', 'Features', 'Team'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => scrollToSection(item.toLowerCase())}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+        <div className="absolute inset-0 animated-bg"></div>
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-8xl font-black mb-6 gradient-text float-animation">
+              TechResQ
+            </h1>
+            <p className="text-2xl md:text-3xl font-bold mb-4">
+              A Proactive Approach to Safety
+            </p>
+            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Revolutionizing disaster management with AI-powered solutions, real-time monitoring, 
+              and comprehensive psychological first-aid support for educational institutions.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <button 
+                onClick={() => {
+                  triggerConfetti();
+                  scrollToSection('solution');
+                }}
+                className="hero-btn"
+              >
+                Explore Solution
+              </button>
+              <button 
+                onClick={() => {
+                  triggerConfetti();
+                  scrollToSection('demo');
+                }}
+                className="hero-btn-secondary"
+              >
+                Try Demo
+              </button>
+            </div>
+
+            {/* Impact Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
+              <div className="tech-card">
+                <div className="text-3xl font-bold text-primary">{counters.schools.toLocaleString()}+</div>
+                <div className="text-muted-foreground">Schools Protected</div>
+              </div>
+              <div className="tech-card">
+                <div className="text-3xl font-bold text-secondary">{counters.students.toLocaleString()}+</div>
+                <div className="text-muted-foreground">Students Safeguarded</div>
+              </div>
+              <div className="tech-card">
+                <div className="text-3xl font-bold text-accent">{counters.incidents}%</div>
+                <div className="text-muted-foreground">Risk Reduction</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-subtle">
+          <ChevronDown className="w-8 h-8 text-primary" />
+        </div>
+      </section>
+
+      {/* Problem & Solution Section */}
+      <section id="solution" className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Problem & Solution
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Problems */}
+            <div className="space-y-8">
+              <h3 className="text-2xl font-bold text-danger mb-6 flex items-center">
+                <AlertTriangle className="w-8 h-8 mr-3" />
+                Current Challenges
+              </h3>
+              
+              {[
+                "Reactive disaster response instead of proactive prevention",
+                "Limited psychological support during crisis situations",
+                "Lack of real-time monitoring and early warning systems",
+                "Inadequate damage assessment and loss estimation tools",
+                "Poor coordination between emergency responders"
+              ].map((problem, index) => (
+                <div key={index} className="flex items-start space-x-4">
+                  <div className="w-2 h-2 bg-danger rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-lg text-muted-foreground">{problem}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Solutions */}
+            <div className="space-y-8">
+              <h3 className="text-2xl font-bold text-secondary mb-6 flex items-center">
+                <CheckCircle className="w-8 h-8 mr-3" />
+                TechResQ Solutions
+              </h3>
+              
+              {[
+                { icon: Brain, text: "AI-powered Psychological First-Aid Library" },
+                { icon: Activity, text: "Real-time Emotion & Stress Detection" },
+                { icon: Eye, text: "Continuous monitoring dashboards" },
+                { icon: TrendingUp, text: "Predictive damage & loss estimation" },
+                { icon: Users, text: "Coordinated emergency response system" }
+              ].map((solution, index) => (
+                <div key={index} className="flex items-start space-x-4">
+                  <solution.icon className="w-6 h-6 text-secondary mt-1 flex-shrink-0" />
+                  <p className="text-lg">{solution.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Demo */}
+      <section id="demo" className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Live Dashboard Demo
+          </h2>
+          
+          <div className="tech-card max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-danger/20 border border-danger rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-danger font-semibold">High Risk Schools</span>
+                  <div className="w-3 h-3 bg-danger rounded-full animate-ping"></div>
+                </div>
+                <div className="text-2xl font-bold">23</div>
+                <div className="text-sm text-muted-foreground">Immediate attention required</div>
+              </div>
+              
+              <div className="bg-warning/20 border border-warning rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-warning font-semibold">Estimated Losses</span>
+                  <TrendingUp className="w-4 h-4 text-warning" />
+                </div>
+                <div className="text-2xl font-bold">₹2.4Cr</div>
+                <div className="text-sm text-muted-foreground">Potential infrastructure damage</div>
+              </div>
+              
+              <div className="bg-secondary/20 border border-secondary rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-secondary font-semibold">Active Responders</span>
+                  <Users className="w-4 h-4 text-secondary" />
+                </div>
+                <div className="text-2xl font-bold">156</div>
+                <div className="text-sm text-muted-foreground">Emergency personnel deployed</div>
+              </div>
+            </div>
+
+            <div className="bg-surface-dark rounded-lg p-6">
+              <h4 className="text-lg font-semibold mb-4 flex items-center">
+                <Target className="w-5 h-5 mr-2 text-primary" />
+                Priority Actions
+              </h4>
+              <div className="space-y-3">
+                {[
+                  "Deploy additional mental health support to Zone A schools",
+                  "Activate emergency communication protocols for affected areas",
+                  "Initiate student relocation procedures for high-risk buildings"
+                ].map((action, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm">{action}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Digital Resilience Hub */}
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Digital Resilience Hub
+          </h2>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="tech-card">
+              <h3 className="text-2xl font-bold mb-6 text-center">AI-Powered Risk Assessment</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Number of Buildings</label>
+                  <input
+                    type="number"
+                    value={riskInputs.buildings}
+                    onChange={(e) => setRiskInputs(prev => ({ ...prev, buildings: e.target.value }))}
+                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter building count"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Number of Students</label>
+                  <input
+                    type="number"
+                    value={riskInputs.students}
+                    onChange={(e) => setRiskInputs(prev => ({ ...prev, students: e.target.value }))}
+                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter student count"
+                  />
+                </div>
+              </div>
+              
+              <div className="text-center mb-6">
+                <button
+                  onClick={generateRiskScore}
+                  className="hero-btn"
+                >
+                  Generate Risk Score
+                </button>
+              </div>
+
+              {riskScore && (
+                <div className={`p-6 rounded-lg border-2 ${
+                  riskScore === 'high' ? 'risk-high' : 
+                  riskScore === 'medium' ? 'risk-medium' : 'risk-low'
+                }`}>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold mb-2">
+                      Risk Level: <span className="uppercase">{riskScore}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {riskScore === 'high' ? 'Immediate action required' :
+                       riskScore === 'medium' ? 'Moderate risk - monitor closely' :
+                       'Low risk - standard protocols sufficient'}
+                    </p>
+                    
+                    <div className="flex justify-center space-x-4 mt-4">
+                      <button className="text-2xl hover:scale-125 transition-transform">😟</button>
+                      <button className="text-2xl hover:scale-125 transition-transform">😐</button>
+                      <button className="text-2xl hover:scale-125 transition-transform">😊</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PFA Library Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Psychological First-Aid Library
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Users,
+                title: "Responder Training",
+                description: "Comprehensive training modules for emergency responders and volunteers",
+                features: ["Interactive simulations", "Certification programs", "Regular skill updates"]
+              },
+              {
+                icon: Heart,
+                title: "Digital Stress Relief",
+                description: "Multi-modal support through storytelling, voice notes, and local languages",
+                features: ["Story therapy sessions", "Voice-guided meditation", "Cultural sensitivity"]
+              },
+              {
+                icon: Activity,
+                title: "Emotion Detection",
+                description: "AI-powered monitoring through facial expressions, voice, and text analysis",
+                features: ["Real-time monitoring", "Privacy protection", "Bias mitigation"]
+              }
+            ].map((item, index) => (
+              <div key={index} className="tech-card">
+                <item.icon className="w-12 h-12 text-primary mb-4" />
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-muted-foreground mb-4">{item.description}</p>
+                <ul className="space-y-2">
+                  {item.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center text-sm">
+                      <CheckCircle className="w-4 h-4 text-secondary mr-2" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Innovation Section */}
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Innovation & Uniqueness
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {[
+              {
+                icon: Brain,
+                title: "AI Integration",
+                points: ["Machine learning for risk prediction", "Natural language processing for communication", "Computer vision for damage assessment"]
+              },
+              {
+                icon: Clock,
+                title: "Real-time Monitoring",
+                points: ["Live dashboard updates", "Instant alert systems", "Continuous data streams"]
+              },
+              {
+                icon: Globe,
+                title: "Learning Continuity",
+                points: ["Emergency education protocols", "Remote learning activation", "Academic recovery planning"]
+              },
+              {
+                icon: Zap,
+                title: "Rapid Response",
+                points: ["Automated emergency protocols", "Instant resource allocation", "Coordinated response teams"]
+              }
+            ].map((item, index) => (
+              <div key={index} className="tech-card">
+                <item.icon className="w-16 h-16 text-primary mb-6 pulse-glow" />
+                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
+                <ul className="space-y-3">
+                  {item.points.map((point, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <ChevronRight className="w-5 h-5 text-secondary mt-0.5 mr-2 flex-shrink-0" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ResQBot Chatbot */}
+      <section className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            ResQBot - AI Assistant
+          </h2>
+          
+          <div className="max-w-2xl mx-auto">
+            <div className="tech-card">
+              <div className="h-96 overflow-y-auto mb-4 space-y-4 bg-surface-dark rounded-lg p-4">
+                {chatMessages.map((msg, index) => (
+                  <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      msg.sender === 'user' 
+                        ? 'bg-primary text-white' 
+                        : 'bg-surface border border-border'
+                    }`}>
+                      <div className="flex items-center mb-1">
+                        {msg.sender === 'bot' && <MessageCircle className="w-4 h-4 mr-2 text-primary" />}
+                        <span className="text-xs font-medium">
+                          {msg.sender === 'bot' ? 'ResQBot' : 'You'}
+                        </span>
+                      </div>
+                      <p className="text-sm">{msg.message}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <form onSubmit={handleChatSubmit} className="flex space-x-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask about emergency preparedness..."
+                  className="flex-1 px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button type="submit" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-glow transition-colors">
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gamification & Badges */}
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Achievement Badges
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              { icon: "🌊", title: "Flood Warrior", description: "Completed flood preparedness training", progress: 85 },
+              { icon: "❤️", title: "First-Aid Hero", description: "Mastered emergency medical response", progress: 92 },
+              { icon: "🛡️", title: "Safety Champion", description: "Achieved expert safety coordinator status", progress: 78 }
+            ].map((badge, index) => (
+              <div key={index} className="tech-card text-center">
+                <div className="text-6xl mb-4 animate-bounce-subtle">{badge.icon}</div>
+                <h3 className="text-xl font-bold mb-2">{badge.title}</h3>
+                <p className="text-muted-foreground mb-4">{badge.description}</p>
+                <div className="w-full bg-surface-dark rounded-full h-2">
+                  <div 
+                    className="bg-gradient-primary h-2 rounded-full transition-all duration-1000"
+                    style={{ width: `${badge.progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">{badge.progress}% Complete</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Quiz Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Disaster Preparedness Quiz
+          </h2>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="tech-card">
+              {quizQuestions.map((question, qIndex) => (
+                <div key={qIndex} className="mb-8">
+                  <h3 className="text-lg font-semibold mb-4">
+                    {qIndex + 1}. {question.question}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {question.options.map((option, oIndex) => (
+                      <button
+                        key={oIndex}
+                        onClick={() => handleQuizAnswer(qIndex, oIndex)}
+                        className={`p-3 text-left rounded-lg border transition-all ${
+                          quizAnswers[qIndex] === oIndex
+                            ? 'border-primary bg-primary/20'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              {quizScore !== null && (
+                <div className="text-center p-6 bg-gradient-primary rounded-lg">
+                  <h3 className="text-2xl font-bold mb-2">Quiz Complete!</h3>
+                  <p className="text-xl mb-4">Your Score: {quizScore}/{quizQuestions.length}</p>
+                  {quizScore === quizQuestions.length && (
+                    <p className="text-lg font-semibold">🎉 Perfect Score! You're a disaster preparedness expert!</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section id="team" className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Our Team
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {[
+              { name: "Dr. Sarah Chen", role: "AI Research Lead", avatar: "👩‍💻" },
+              { name: "Mark Rodriguez", role: "Emergency Systems Expert", avatar: "👨‍🚒" },
+              { name: "Priya Sharma", role: "Psychological Safety Specialist", avatar: "👩‍⚕️" },
+              { name: "Alex Johnson", role: "Technology Integration Manager", avatar: "👨‍💼" }
+            ].map((member, index) => (
+              <div key={index} className="tech-card text-center">
+                <div className="text-6xl mb-4">{member.avatar}</div>
+                <h3 className="text-lg font-bold mb-1">{member.name}</h3>
+                <p className="text-muted-foreground text-sm">{member.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Contact Us
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div className="tech-card">
+              <h3 className="text-2xl font-bold mb-6">Get in Touch</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-primary" />
+                  <span>contact@techresq.org</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5 text-primary" />
+                  <span>+1 (555) 123-4567</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <span>Emergency Response Center, Tech Valley</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="tech-card">
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                />
+                <textarea
+                  placeholder="Your Message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                ></textarea>
+                <button type="submit" className="w-full hero-btn">
+                  Send Message
+                </button>
+                
+                {formSubmitted && (
+                  <div className="text-center p-4 bg-secondary/20 border border-secondary rounded-lg">
+                    <p className="text-secondary font-semibold">✅ Message sent successfully!</p>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 bg-surface-dark border-t border-border">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <Shield className="w-8 h-8 text-primary" />
+              <span className="text-2xl font-bold gradient-text">TechResQ</span>
+            </div>
+            
+            <div className="mb-6 overflow-hidden">
+              <div className="animate-[scroll_20s_linear_infinite] whitespace-nowrap">
+                <span className="text-muted-foreground">
+                  🚨 Proactive Safety Solutions • AI-Powered Emergency Response • 
+                  Real-time Monitoring • Psychological First-Aid • Digital Resilience • 
+                  Community Protection • Educational Safety • Disaster Preparedness • 
+                </span>
+              </div>
+            </div>
+            
+            <div className="text-center text-muted-foreground">
+              <p>&copy; 2024 TechResQ. All rights reserved. Building safer communities through technology.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default Index;
+export default TechResQWebsite;
