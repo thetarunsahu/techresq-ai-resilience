@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, Brain, Activity, Users, Award, MessageCircle, Target, ChevronDown, ChevronRight, Star, Heart, Zap, Eye, Smartphone, Globe, CheckCircle, Clock, TrendingUp, User, Mail, Phone, MapPin, Stethoscope, AlertCircle, ExternalLink, Newspaper } from 'lucide-react';
+import { Shield, AlertTriangle, Brain, Activity, Users, Award, MessageCircle, Target, ChevronDown, ChevronRight, Star, Heart, Zap, Eye, Smartphone, Globe, CheckCircle, Clock, TrendingUp, User, Mail, Phone, MapPin, Stethoscope, AlertCircle, ExternalLink, Newspaper, Search, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const TechResQWebsite = () => {
@@ -22,6 +22,11 @@ const TechResQWebsite = () => {
   const [newsArticles, setNewsArticles] = useState<any[]>([]);
   const [newsLoading, setNewsLoading] = useState(false);
   const [newsError, setNewsError] = useState<string | null>(null);
+
+  // Search states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Animated counters
   const [counters, setCounters] = useState({ schools: 0, students: 0, incidents: 0 });
@@ -198,16 +203,188 @@ const TechResQWebsite = () => {
     fetchDisasterNews();
   }, []);
 
+  // Search functionality
+  const searchableContent = [
+    // News articles
+    ...newsArticles.map(article => ({
+      type: 'news',
+      title: article.title,
+      content: article.description,
+      category: 'News & Updates',
+      section: 'news'
+    })),
+    // PFA resources
+    {
+      type: 'resource',
+      title: 'Responder Training',
+      content: 'Comprehensive training modules for emergency responders and volunteers. Interactive simulations, certification programs, regular skill updates.',
+      category: 'Psychological First-Aid',
+      section: 'features'
+    },
+    {
+      type: 'resource',
+      title: 'Digital Stress Relief',
+      content: 'AI-powered stress detection and personalized mindfulness exercises. Breathing techniques, guided meditation, crisis intervention.',
+      category: 'Psychological First-Aid',
+      section: 'features'
+    },
+    {
+      type: 'resource',
+      title: 'Community Support Network',
+      content: 'Peer-to-peer support platform connecting individuals with shared experiences. Mental health resources, group discussions.',
+      category: 'Psychological First-Aid',
+      section: 'features'
+    },
+    // AI Doctor resources
+    {
+      type: 'resource',
+      title: 'AI Health Assistant',
+      content: 'Get immediate first-aid guidance for symptoms like fever, stress, injuries, anxiety. Virtual health consultation and emergency advice.',
+      category: 'Health & Medical',
+      section: 'ai-doctor'
+    },
+    // Quiz and preparedness
+    {
+      type: 'resource',
+      title: 'Disaster Preparedness Quiz',
+      content: 'Test your knowledge on earthquake safety, emergency supplies, communication during disasters, and family emergency planning.',
+      category: 'Education & Training',
+      section: 'features'
+    },
+    // Dashboard features
+    {
+      type: 'resource',
+      title: 'Real-time Monitoring Dashboard',
+      content: 'Live tracking of high-risk schools, estimated losses, active responders, and priority emergency actions.',
+      category: 'Monitoring & Analytics',
+      section: 'demo'
+    },
+    // Gamification
+    {
+      type: 'resource',
+      title: 'Achievement Badges',
+      content: 'Earn badges for completing training: Flood Warrior, First-Aid Hero, Safety Champion. Track your progress and expertise.',
+      category: 'Gamification',
+      section: 'features'
+    },
+    // General safety
+    {
+      type: 'resource',
+      title: 'Emergency Response Protocols',
+      content: 'Step-by-step emergency procedures, evacuation plans, communication strategies, and coordination with first responders.',
+      category: 'Emergency Procedures',
+      section: 'solution'
+    }
+  ];
+
+  const performSearch = (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const results = searchableContent.filter(item =>
+      item.title.toLowerCase().includes(query.toLowerCase()) ||
+      item.content.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    setSearchResults(results);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    performSearch(query);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setIsSearching(false);
+  };
+
+  const handleSearchResultClick = (section: string) => {
+    scrollToSection(section);
+    clearSearch();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero text-foreground">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center space-x-3">
               <Shield className="w-8 h-8 text-primary" />
               <span className="text-2xl font-bold gradient-text">TechResQ</span>
             </div>
+            
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md mx-4 relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search resources..."
+                  className="w-full pl-10 pr-10 py-2 bg-surface/50 border border-border rounded-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 shadow-lg hover:shadow-xl"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              
+              {/* Search Results Dropdown */}
+              {(isSearching && searchQuery) && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-xl max-h-80 overflow-y-auto z-50 animate-fade-in">
+                  {searchResults.length > 0 ? (
+                    <div className="p-2">
+                      <div className="text-xs text-muted-foreground px-3 py-2 border-b border-border">
+                        {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+                      </div>
+                      {searchResults.map((result, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSearchResultClick(result.section)}
+                          className="w-full text-left p-3 hover:bg-surface rounded-lg transition-colors group"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-sm group-hover:text-primary transition-colors">
+                                {result.title}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                {result.content}
+                              </p>
+                              <span className="inline-block mt-2 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                                {result.category}
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center text-muted-foreground">
+                      <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No results found for "{searchQuery}"</p>
+                      <p className="text-xs mt-1">Try searching for topics like "emergency", "health", "training", or "safety"</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
             <div className="hidden md:flex space-x-8">
               {['Solution', 'Demo', 'AI Doctor', 'News', 'Features'].map((item) => (
                 <button
