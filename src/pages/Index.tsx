@@ -602,30 +602,6 @@ const TechResQWebsite = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section id="team" className="py-20 bg-surface">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
-            Our Team
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              { role: "Project Lead & AI Systems", avatar: "👨‍💻" },
-              { role: "Emergency Response Specialist", avatar: "👩‍🚒" },
-              { role: "Psychological Safety Expert", avatar: "👨‍⚕️" },
-              { role: "Data Analytics & Monitoring", avatar: "👩‍💻" },
-              { role: "Technology Integration", avatar: "👨‍💼" },
-              { role: "Safety Systems Engineer", avatar: "👨‍🔧" }
-            ].map((member, index) => (
-              <div key={index} className="tech-card text-center">
-                <div className="text-6xl mb-4">{member.avatar}</div>
-                <p className="text-muted-foreground text-sm">{member.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Contact Section */}
       <section className="py-20">
