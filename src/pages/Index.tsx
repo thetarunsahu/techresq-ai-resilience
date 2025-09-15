@@ -611,16 +611,15 @@ const TechResQWebsite = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
-              { name: "Tarun Sahu", role: "Project Lead & AI Systems", avatar: "👨‍💻" },
-              { name: "Surbhi Bagul", role: "Emergency Response Specialist", avatar: "👩‍🚒" },
-              { name: "Rishabh Prajapati", role: "Psychological Safety Expert", avatar: "👨‍⚕️" },
-              { name: "Pranjali Amarsinh Jadhavrao", role: "Data Analytics & Monitoring", avatar: "👩‍💻" },
-              { name: "Prathamesh Fasale", role: "Technology Integration", avatar: "👨‍💼" },
-              { name: "Priyavardhan Galgate", role: "Safety Systems Engineer", avatar: "👨‍🔧" }
+              { role: "Project Lead & AI Systems", avatar: "👨‍💻" },
+              { role: "Emergency Response Specialist", avatar: "👩‍🚒" },
+              { role: "Psychological Safety Expert", avatar: "👨‍⚕️" },
+              { role: "Data Analytics & Monitoring", avatar: "👩‍💻" },
+              { role: "Technology Integration", avatar: "👨‍💼" },
+              { role: "Safety Systems Engineer", avatar: "👨‍🔧" }
             ].map((member, index) => (
               <div key={index} className="tech-card text-center">
                 <div className="text-6xl mb-4">{member.avatar}</div>
-                <h3 className="text-lg font-bold mb-1">{member.name}</h3>
                 <p className="text-muted-foreground text-sm">{member.role}</p>
               </div>
             ))}
