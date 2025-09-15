@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, Brain, Activity, Users, Award, MessageCircle, Target, ChevronDown, ChevronRight, Star, Heart, Zap, Eye, Smartphone, Globe, CheckCircle, Clock, TrendingUp, User, Mail, Phone, MapPin } from 'lucide-react';
+import { Shield, AlertTriangle, Brain, Activity, Users, Award, MessageCircle, Target, ChevronDown, ChevronRight, Star, Heart, Zap, Eye, Smartphone, Globe, CheckCircle, Clock, TrendingUp, User, Mail, Phone, MapPin, Stethoscope, AlertCircle, ExternalLink, Newspaper } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const TechResQWebsite = () => {
@@ -13,6 +13,15 @@ const TechResQWebsite = () => {
   const [riskScore, setRiskScore] = useState<'high' | 'medium' | 'low' | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // AI Doctor states
+  const [symptoms, setSymptoms] = useState('');
+  const [aiAdvice, setAiAdvice] = useState<string | null>(null);
+
+  // News states
+  const [newsArticles, setNewsArticles] = useState<any[]>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [newsError, setNewsError] = useState<string | null>(null);
 
   // Animated counters
   const [counters, setCounters] = useState({ schools: 0, students: 0, incidents: 0 });
@@ -119,6 +128,76 @@ const TechResQWebsite = () => {
     setTimeout(() => setFormSubmitted(false), 3000);
   };
 
+  // AI Doctor Logic
+  const getHealthAdvice = () => {
+    if (!symptoms.trim()) {
+      setAiAdvice("Please describe your symptoms first.");
+      return;
+    }
+
+    const symptomLower = symptoms.toLowerCase();
+    let advice = "";
+
+    if (symptomLower.includes('fever') || symptomLower.includes('temperature')) {
+      advice = "🌡️ For fever: Rest and drink plenty of fluids. Take acetaminophen or ibuprofen as directed. Monitor temperature regularly. Seek medical attention if fever exceeds 103°F (39.4°C) or persists for more than 3 days.";
+    } else if (symptomLower.includes('stress') || symptomLower.includes('anxiety') || symptomLower.includes('worried')) {
+      advice = "🧘‍♀️ For stress/anxiety: Try deep breathing exercises (4-7-8 technique). Practice mindfulness or meditation. Get regular exercise and adequate sleep. Consider talking to a counselor if symptoms persist.";
+    } else if (symptomLower.includes('injury') || symptomLower.includes('wound') || symptomLower.includes('cut')) {
+      advice = "🩹 For minor injuries: Clean wound with water, apply antiseptic, cover with bandage. For bleeding, apply direct pressure. For serious injuries, seek immediate medical attention.";
+    } else if (symptomLower.includes('headache') || symptomLower.includes('head')) {
+      advice = "💊 For headaches: Rest in a quiet, dark room. Apply cold or warm compress. Stay hydrated. Consider over-the-counter pain relievers. Seek medical help for severe or persistent headaches.";
+    } else if (symptomLower.includes('chest pain') || symptomLower.includes('breathing')) {
+      advice = "🚨 For chest pain or breathing difficulties: This could be serious. Sit upright, stay calm. If severe or accompanied by sweating, nausea, or arm pain, call emergency services immediately.";
+    } else if (symptomLower.includes('stomach') || symptomLower.includes('nausea') || symptomLower.includes('vomit')) {
+      advice = "🤢 For stomach issues: Rest and avoid solid foods initially. Drink clear fluids like water or ginger tea. Try small amounts of bland foods (BRAT diet). Seek medical attention if symptoms worsen.";
+    } else {
+      advice = "💡 General health advice: Monitor your symptoms closely. Stay hydrated, get adequate rest, and maintain good hygiene. If symptoms worsen or persist, consult a healthcare professional. For emergencies, call local emergency services.";
+    }
+
+    setAiAdvice(advice);
+  };
+
+  // News API Logic
+  const fetchDisasterNews = async () => {
+    setNewsLoading(true);
+    setNewsError(null);
+    
+    try {
+      // DEMO: Using JSONPlaceholder for demonstration
+      // TO USE REAL NEWS: Replace with NewsAPI.org endpoint:
+      // const response = await fetch(`https://newsapi.org/v2/everything?q=disaster+emergency+safety&sortBy=publishedAt&pageSize=6&apiKey=${API_KEY}`);
+      const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=6');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch news');
+      }
+      
+      const data = await response.json();
+      
+      // Transform placeholder data to look like news articles
+      const transformedData = data.map((item: any, index: number) => ({
+        id: item.id,
+        title: `Disaster Alert: ${item.title.substring(0, 50)}...`,
+        description: item.body.substring(0, 120) + '...',
+        url: `#news-${item.id}`,
+        source: index % 2 === 0 ? 'Emergency Alert System' : 'Disaster Response Network',
+        publishedAt: new Date(Date.now() - Math.random() * 86400000).toISOString()
+      }));
+      
+      setNewsArticles(transformedData);
+    } catch (error) {
+      setNewsError('Unable to fetch latest news. Please check your internet connection and try again.');
+      console.error('News fetch error:', error);
+    } finally {
+      setNewsLoading(false);
+    }
+  };
+
+  // Load news on component mount
+  useEffect(() => {
+    fetchDisasterNews();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-hero text-foreground">
       {/* Navigation */}
@@ -130,10 +209,10 @@ const TechResQWebsite = () => {
               <span className="text-2xl font-bold gradient-text">TechResQ</span>
             </div>
             <div className="hidden md:flex space-x-8">
-              {['Solution', 'Demo', 'Features', 'Team'].map((item) => (
+              {['Solution', 'Demo', 'AI Doctor', 'News', 'Features'].map((item) => (
                 <button
                   key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
+                  onClick={() => scrollToSection(item.toLowerCase().replace(' ', '-'))}
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   {item}
@@ -522,6 +601,145 @@ const TechResQWebsite = () => {
                 </button>
               </form>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Doctor Section */}
+      <section id="ai-doctor" className="py-20 bg-surface">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            AI Doctor – Your Virtual Health Assistant
+          </h2>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="tech-card">
+              <div className="text-center mb-8">
+                <Stethoscope className="w-16 h-16 text-primary mx-auto mb-4 animate-pulse" />
+                <p className="text-lg text-muted-foreground">
+                  Describe your symptoms and get immediate first-aid guidance and stress-relief advice
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Describe your symptoms (fever, stress, injury, anxiety, etc.)
+                  </label>
+                  <textarea
+                    value={symptoms}
+                    onChange={(e) => setSymptoms(e.target.value)}
+                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    rows={4}
+                    placeholder="Example: I have a headache and feeling stressed about the upcoming exam..."
+                  />
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={getHealthAdvice}
+                    className="hero-btn animate-fade-in"
+                    disabled={!symptoms.trim()}
+                  >
+                    <Stethoscope className="w-5 h-5 mr-2" />
+                    Get Advice
+                  </button>
+                </div>
+
+                {aiAdvice && (
+                  <div className="tech-card bg-primary/10 border-primary/20 animate-scale-in">
+                    <div className="flex items-start space-x-3">
+                      <AlertCircle className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <h4 className="font-semibold text-primary mb-2">AI Health Advice</h4>
+                        <p className="text-foreground leading-relaxed">{aiAdvice}</p>
+                        <div className="mt-4 p-3 bg-warning/20 border border-warning/50 rounded-lg">
+                          <p className="text-sm text-warning-foreground">
+                            ⚠️ <strong>Disclaimer:</strong> This is general guidance only. For serious conditions or emergencies, 
+                            please contact emergency services or consult a healthcare professional immediately.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Disaster & Safety News */}
+      <section id="news" className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text">
+            Live Disaster & Safety News
+          </h2>
+          
+          <div className="max-w-6xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center space-x-2">
+                <Newspaper className="w-6 h-6 text-primary" />
+                <span className="text-lg font-semibold">Latest Updates</span>
+              </div>
+              <button
+                onClick={fetchDisasterNews}
+                disabled={newsLoading}
+                className="text-primary hover:text-primary/80 transition-colors flex items-center space-x-2"
+              >
+                <span>{newsLoading ? 'Refreshing...' : 'Refresh'}</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {newsError && (
+              <div className="tech-card bg-danger/10 border-danger/20 mb-8">
+                <div className="flex items-center space-x-3">
+                  <AlertTriangle className="w-6 h-6 text-danger" />
+                  <p className="text-danger">{newsError}</p>
+                </div>
+              </div>
+            )}
+
+            {newsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="tech-card animate-pulse">
+                    <div className="h-4 bg-surface-dark rounded mb-3"></div>
+                    <div className="h-3 bg-surface-dark rounded mb-2"></div>
+                    <div className="h-3 bg-surface-dark rounded mb-4"></div>
+                    <div className="h-8 bg-surface-dark rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {newsArticles.map((article) => (
+                  <div key={article.id} className="tech-card hover-scale">
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-semibold text-lg leading-tight">{article.title}</h3>
+                        <div className="w-2 h-2 bg-danger rounded-full animate-pulse flex-shrink-0 mt-2"></div>
+                      </div>
+                      
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {article.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{article.source}</span>
+                        <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                      </div>
+                      
+                      <button className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-4 py-2 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                        <span>Read More</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
