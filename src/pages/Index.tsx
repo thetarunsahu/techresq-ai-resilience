@@ -782,6 +782,32 @@ const TechResQWebsite = () => {
         </div>
       </section>
 
+      {/* eBook Promotion Section */}
+      <section className="py-16 relative">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-8 border border-border/50 shadow-xl">
+              <div className="mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">
+                  📘 Expert Knowledge at Your Fingertips
+                </h2>
+                <p className="text-lg text-muted-foreground mb-2">
+                  Enhance your knowledge of Disaster Management with our exclusive eBook.
+                </p>
+                <p className="text-muted-foreground">
+                  Click below to access expert insights, safety guidelines, and preparedness strategies.
+                </p>
+              </div>
+              
+              <button className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <span className="text-2xl">📘</span>
+                Download eBook
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* AI Doctor Section */}
       <section id="ai-doctor" className="py-20 bg-surface">
         <div className="container mx-auto px-6">
